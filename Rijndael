@@ -1,0 +1,83 @@
+using System;
+using System.IO;
+using System.Security.Cryptography;
+using System.Text;
+
+namespace RijndaelManage
+{
+    class Rijndael
+    {
+        public  static void Main()
+        {
+            try
+            {
+
+                string original = "Ahmet Toprak";
+                Console.WriteLine(original);
+                var encrypt=Encrypt(original);
+                Console.WriteLine(encrypt);
+                var decrypt = Decrypt(encrypt);
+                Console.WriteLine(decrypt);
+                Console.ReadLine();
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error: {0}", e.Message);
+            }
+        }
+
+        /* SiFRELEME */
+        private static byte[] key = { };
+        private static byte[] IV = { 40, 55, 206, 50, 28, 64, 20, 18 };
+        private static string stringKey = "!ACER0087Q@";
+
+
+        public  static string Encrypt(string text)
+        {
+            try
+            {
+                key = Encoding.UTF8.GetBytes(stringKey.Substring(0, 8));
+
+                DESCryptoServiceProvider des = new DESCryptoServiceProvider();
+                Byte[] byteArray = Encoding.UTF8.GetBytes(text);
+
+                MemoryStream memoryStream = new MemoryStream();
+                CryptoStream cryptoStream = new CryptoStream(memoryStream, des.CreateEncryptor(key, IV), CryptoStreamMode.Write);
+
+                cryptoStream.Write(byteArray, 0, byteArray.Length);
+                cryptoStream.FlushFinalBlock();
+
+                return Convert.ToBase64String(memoryStream.ToArray());
+            }
+            catch //(Exception ex)
+            {
+                // Handle Exception Here
+            }
+            return string.Empty;
+        }
+
+        public static string Decrypt(string text)
+        {
+            try
+            {
+                key = Encoding.UTF8.GetBytes(stringKey.Substring(0, 8));
+                DESCryptoServiceProvider des = new DESCryptoServiceProvider();
+                Byte[] byteArray = Convert.FromBase64String(text);
+                MemoryStream memoryStream = new MemoryStream();
+                CryptoStream cryptoStream = new CryptoStream(memoryStream, des.CreateDecryptor(key, IV), CryptoStreamMode.Write);
+
+                cryptoStream.Write(byteArray, 0, byteArray.Length);
+                cryptoStream.FlushFinalBlock();
+
+                return Encoding.UTF8.GetString(memoryStream.ToArray());
+            }
+            catch //(Exception ex)
+            {
+
+                // Handle Exception Here
+            }
+            return string.Empty;
+        }
+    }
+}
